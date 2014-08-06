@@ -124,7 +124,6 @@ class Expressions
 	private function build_sql_from_hash(&$hash, $glue)
 	{
 		$sql = $g = "";
-		$values = array();
 
 		foreach ($hash as $name => $value)
 		{
@@ -134,18 +133,13 @@ class Expressions
 			if (is_array($value))
 				$sql .= "$g$name IN(?)";
 			elseif (is_null($value))
-			{
-				$sql .= "$g$name IS NULL";
-				$g = $glue;
-				continue;
-			}
+				$sql .= "$g$name IS ?";
 			else
 				$sql .= "$g$name=?";
 
 			$g = $glue;
-			$values[] = $value;
 		}
-		return array($sql,$values);
+		return array($sql,array_values($hash));
 	}
 
 	private function substitute(&$values, $substitute, $pos, $parameter_index)
